@@ -1,4 +1,4 @@
-const U = process.env.SUPABASE_URL, S = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const U = new URL(process.env.SUPABASE_URL).origin, S = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const H = { apikey: S, Authorization: 'Bearer ' + S, 'Content-Type': 'application/json' };
 const rs = (c, b) => ({ statusCode: c, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(b) });
 const rest = (p, o = {}) => fetch(U + p, { headers: H, ...o });

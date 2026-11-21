@@ -1,0 +1,14 @@
+# The site lives in the psp-portal/ subfolder: a static index.html plus
+# Netlify Functions. There is no package.json, so nothing is installed and
+# there is no build command.
+#
+# Once the base directory is set, Netlify also reads psp-portal/netlify.toml,
+# which supplies the publish folder, functions folder and Node version.
+# Paths below are relative to the base directory.
+[build]
+  base = "psp-portal"
+  publish = "."
+  command = ""
+
+[functions]
+  directory = "netlify/functions"

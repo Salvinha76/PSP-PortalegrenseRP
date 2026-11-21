@@ -3,7 +3,7 @@ exports.handler = async (e) => {
   try {
     if (e.httpMethod !== 'POST') return rs(405, { error: 'Método inválido' });
     const tk = (e.headers.authorization || '').replace('Bearer ', '');
-    const u = await (await fetch(process.env.SUPABASE_URL + '/auth/v1/user', {
+    const u = await (await fetch(new URL(process.env.SUPABASE_URL).origin + '/auth/v1/user', {
       headers: { apikey: process.env.SUPABASE_ANON_KEY, Authorization: 'Bearer ' + tk } })).json();
     if (!u.id) return rs(401, { error: 'Sessão inválida' });
     const { text, images = [], canal, title, color } = JSON.parse(e.body || '{}');
