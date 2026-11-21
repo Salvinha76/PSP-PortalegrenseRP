@@ -1,0 +1,242 @@
+<!DOCTYPE html><html lang="pt"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PSP · Portal Operacional</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<style>
+:root{--b:#002D74;--b2:#0a4aa8;--bg:#f2f5fa;--t:#14213d;--m:#667085;--l:#dbe3f0;--er:#b42318}
+*{box-sizing:border-box}body{margin:0;font-family:Montserrat,Arial,sans-serif;background:var(--bg);color:var(--t);font-size:14px}
+h2{margin:0 0 4px;font-weight:800;color:var(--b);font-size:26px}h3{margin:0 0 10px}.m{color:var(--m)}
+.app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+aside{background:#fff;border-right:1px solid var(--l);position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:18px 14px}
+.lg img{width:100%;margin-bottom:22px}
+nav a{display:block;padding:11px 14px;border-radius:8px;font-weight:600;cursor:pointer;margin-bottom:4px}nav a:hover{background:var(--bg)}nav a.on{background:var(--b);color:#fff}
+.usr{margin-top:auto;padding-top:14px;border-top:1px solid var(--l);font-size:12px}.usr b{display:block;font-size:13px}
+main{padding:28px 34px;max-width:1100px;width:100%}
+.card{background:#fff;border:1px solid var(--l);border-radius:12px;padding:18px;margin:14px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}.grid .card{margin:0}.cl{cursor:pointer}.cl:hover{border-color:var(--b)}.big{display:block;font-size:40px;color:var(--b);font-weight:800}
+label{display:block;font-weight:600;font-size:12px;margin:12px 0 5px;color:var(--m)}
+input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--l);border-radius:8px;font:inherit;background:#fff}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--b2)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}.row>*{flex:1;min-width:130px}
+.btn{background:var(--b);color:#fff;border:0;border-radius:8px;padding:11px 18px;font:700 13px Montserrat,Arial;cursor:pointer}.btn:hover{background:var(--b2)}
+.btn.ghost{background:#fff;color:var(--b);border:1px solid var(--b)}.sm{padding:6px 10px;min-width:0;flex:0}
+table{width:100%;border-collapse:collapse}th,td{padding:10px;text-align:left;border-bottom:1px solid var(--l)}th{font-size:12px;color:var(--m)}.tw{overflow-x:auto}
+.tag{padding:3px 9px;border-radius:20px;background:#e6efff;color:var(--b);font-size:12px;font-weight:600}
+.drop{border:2px dashed var(--l);border-radius:10px;padding:18px;text-align:center;color:var(--m)}.lk{display:inline;color:var(--b);text-decoration:underline;cursor:pointer;font-size:inherit;margin:0}
+.th{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.th div{position:relative}.th img{height:70px;border-radius:6px}
+.th button{position:absolute;top:-6px;right:-6px;border:0;border-radius:50%;background:var(--er);color:#fff;width:20px;height:20px;cursor:pointer}
+.pv{background:#1e2230;color:#e8ecf5;padding:16px;border-radius:10px;white-space:pre-wrap;margin-top:14px;font:13px Consolas,monospace}
+.lgn{display:grid;grid-template-columns:1.1fr 1fr;min-height:100vh}.hero{background:#0a0f5c}.hero img{width:100%;height:100%;object-fit:cover}
+.box{padding:12vh 9%;background:#fff}.box img{width:250px;margin-bottom:28px}.box .btn{width:100%;margin-top:18px}.bad{color:var(--er);margin-top:10px}
+.ov{position:fixed;inset:0;background:rgba(0,20,60,.5);backdrop-filter:blur(6px);display:grid;place-items:center;z-index:50}.mb{background:#fff;border-radius:14px;padding:26px;width:min(420px,92vw)}
+code{background:var(--bg);padding:3px 8px;border-radius:5px;font-weight:700}
+.toast{position:fixed;bottom:22px;right:22px;background:var(--b);color:#fff;padding:12px 18px;border-radius:8px;z-index:99}.toast.bad{background:var(--er);color:#fff;margin:0}
+#tut{position:fixed;inset:0;z-index:60}.veil{position:absolute;inset:0;backdrop-filter:blur(6px);background:rgba(0,20,60,.45)}
+.ring{position:absolute;border:2px solid #fff;border-radius:10px;box-shadow:0 0 0 4px var(--b2)}
+.tc{position:absolute;background:#fff;border-radius:12px;padding:18px;width:300px;box-shadow:0 10px 40px #0005}.tc small{color:var(--m);font-weight:600}.tc h3{margin:4px 0 6px;color:var(--b)}
+.fs{border:1px solid var(--l);border-radius:10px;margin:14px 0;padding:2px 14px 14px;min-width:0}.fs legend{font-weight:700;color:var(--b);padding:0 6px}
+.cg{display:grid;grid-template-columns:1fr 370px;gap:18px;align-items:start}.reg{position:sticky;top:18px;background:#fff;border:1px solid var(--l);border-radius:12px;padding:18px;max-height:calc(100vh - 36px);overflow:auto}
+.lv{background:#fff;border:1px solid var(--l);border-left:6px solid var(--c);border-radius:10px;margin:10px 0}.lv summary{cursor:pointer;padding:12px 14px;font-weight:700;color:var(--c);display:flex;justify-content:space-between}
+.it{display:flex;gap:10px;align-items:center;padding:10px 14px;border-top:1px solid var(--l)}.it>div{flex:1}.it small{display:block;color:var(--m)}.it .pr{font-weight:700;color:var(--c);white-space:nowrap}.it .btn{background:var(--c)}
+.ln{border-bottom:1px solid var(--l);padding:8px 0}.ln .row{margin-top:6px;flex-wrap:nowrap}.ln input{min-width:0;padding:6px 8px}
+.tf,.tp{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-radius:10px;margin-top:10px;font-weight:600}.tf{background:#e7f6ec;color:#157f3b}.tp{background:#fdeaea;color:#b42318}.tf b,.tp b{font-size:22px}
+.ck{display:flex;gap:8px;font-weight:500;margin:6px 0;color:var(--t)}.ck input{width:auto}
+@media(max-width:800px){.cg{grid-template-columns:1fr}.reg{position:static;max-height:none}.app,.lgn{grid-template-columns:1fr}.hero{display:none}aside{position:static;height:auto}main{padding:18px}.tc{left:12px!important;top:auto!important;bottom:12px}}
+</style></head><body><div id="root"></div>
+<script>
+const SB_URL='https://fsemudazeyihlaoyxzof.supabase.co/rest/v1/',SB_KEY='sb_publishable_H0isXPCovX5HlE78K3tbKw_fsf8APqI';
+const sb=supabase.createClient(SB_URL,SB_KEY);
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const opt=(a,s)=>a.map(x=>`<option${x==s?' selected':''}>${x}</option>`).join('');
+const PAT=["Agente","Agente Principal","Agente Coordenador","Subchefe","Chefe","Chefe Principal","Subcomissário","Comissário","Superintendente","Subdiretor Nac.","Dir. Nac. Adj.","Dir. Nac."];
+const DIR=["Direção Nacional","Operações","Trânsito","Investigação Criminal","Formação","Esquadra Portalegre"];
+const ES=["Ativo","Licença","Suspenso","Reserva"];
+const E='═'.repeat(32),D='─'.repeat(32),P='┄'.repeat(32),B='━'.repeat(32),SEP={E,D,P,B},SIM=['Sim','Não'];
+const TPL={
+ abord:{t:'RELATÓRIO DE ABORDAGEM RODOVIÁRIA',n:'Abordagem Rodoviária',req:['mt','cn'],S:[
+  {h:'AGENTE',s:'D',f:[['ag','Nome','i'],['nm','Nº Mec.','i'],['vi','Viatura','i']]},
+  {h:'LOCAL E HORA',s:'P',f:[['dt','Data','i'],['hr','Hora','i'],['lc','Local','i']]},
+  {h:'VEÍCULO',s:'P',f:[['mt','Matrícula','i'],['mm','Marca / Modelo','i'],['cr','Cor','i']]},
+  {h:'CONDUTOR',s:'B',f:[['cn','Nome','i'],['cc','Nº Cartão Cidadão','i'],['ca','Carta (Válida / Categoria)','i']]},
+  {h:'MOTIVO DA ABORDAGEM',s:'D',f:[['mo','Motivo','s',['Fiscalização','Suspeita','STOP','Outro']]]},
+  {h:'VERIFICAÇÕES',s:'B',f:[['dc','Documentos','s',['OK','Em falta']],['sg','Seguro','s',['OK','Em falta']],['ip','Inspeção','s',['OK','Em atraso']],['al','Álcool (Sim / Não · Resultado)','i'],['es','Estupefacientes (Sim / Não)','i']]},
+  {h:'INFRAÇÃO',s:'D',gate:['inf','Infração cometida?'],f:[['id','Descrição da infração','a'],['ar','Artigo (CE)','i'],['gr','Gravidade','s',['Leve','Grave','Muito grave']],['vl','Velocidade (registada / limite)','i'],['co','Coima','i'],['pt','Inibição / Pontos','i'],['ap','Apreensão','i'],['rb','Reboque','s',SIM],['de','Desfecho','s',['Auto de contraordenação','Notificação','Advertência','Detenção']]]},
+  {h:'RESULTADO',s:'D',f:[['rs','Resultado (preencher de acordo com a situação)','x']]},
+  {h:'OBSERVAÇÕES',f:[['ob','Observações (se necessário)','x']]}]},
+ det:{t:'RELATÓRIO DE DETENÇÃO',n:'Detenção',req:['dn','cm'],S:[
+  {h:'AGENTE RESPONSÁVEL',s:'D',f:[['ag','Nome','i'],['nm','Nº Mec.','i'],['vi','Viatura','i'],['ap','Agentes de apoio','i']]},
+  {h:'LOCAL E HORA',s:'P',f:[['dt','Data','i'],['hr','Hora da detenção','i'],['lc','Local','i']]},
+  {h:'IDENTIFICAÇÃO DO DETIDO',s:'B',f:[['dn','Nome','i'],['di','Nº Cartão Cidadão','i'],['id','Idade','i'],['fs','Descrição física','i']]},
+  {h:'MOTIVO DA DETENÇÃO',s:'D',f:[['cm','Crime(s)','i'],['en','Enquadramento (Art.)','i'],['na','Natureza','s',['Flagrante delito','Mandado']]]},
+  {h:'CIRCUNSTÂNCIAS',s:'P',f:[['ci','Descrição cronológica dos factos','x']]},
+  {h:'USO DA FORÇA',s:'B',f:[['rz','Resistência','s',SIM],['me','Meios utilizados','i']]},
+  {h:'DIREITOS E GARANTIAS',s:'D',f:[['dl','Direitos lidos (hora)','i'],['si','Direito ao silêncio','s',['Informado','Não informado']],['av','Advogado','s',['Solicitado','Dispensado']],['ct','Contacto a terceiro','s',SIM]]},
+  {h:'REVISTA E APREENSÕES',s:'P',f:[['rv','Revista pessoal','s',['Efetuada','Não efetuada']],['oa','Objetos apreendidos','i'],['vc','Veículo (Apreendido / Matrícula)','i']]},
+  {h:'ESTADO DO DETIDO',s:'B',f:[['le','Lesões (Sim / Não · Descrição)','i'],['as','Assistência médica','s',['Prestada','Recusada','Não necessária']]]},
+  {h:'TESTEMUNHAS',s:'D',f:[['te','Testemunhas','x']]},
+  {h:'DESFECHO',s:'P',f:[['en2','Encaminhado para','s',['Esquadra','Tribunal','Outro']],['he','Hora de entrada','i'],['md','Medida aplicada','i']]},
+  {h:'OBSERVAÇÕES',f:[['ob','Observações (se necessário)','x']]}]}
+};
+let me=null,sec='inicio',imgs=[],cart=[],lig=[],myRs=[];
+
+const NV=[['Contraordenações leves','#2e9e5b'],['Contraordenações graves','#c9a000'],['Contraordenações muito graves','#e8751a'],['Crimes de gravidade média','#d9480f'],['Crimes graves','#c4161c'],['Crimes muito graves','#7a0c12']];
+/* [nível, nome, artigo, coima €, prisão (meses), pontos, moldura legal] */
+const CAT=[
+[0,'Estacionamento indevido','CE 49.º/50.º',30,0,0,'30–150 €'],
+[0,'Falta de distância de segurança','CE 18.º',60,0,0,'60–300 €'],
+[0,'Não portar documento do veículo','CE 85.º',60,0,0,'60–300 €'],
+[0,'Excesso de velocidade até 20 km/h (localidade)','CE 27.º',60,0,0,'60–300 €'],
+[1,'Excesso de velocidade 20–40 km/h (localidade)','CE 27.º',120,0,2,'120–600 € · inibição 1 mês–1 ano'],
+[1,'Uso de telemóvel ao volante','CE 84.º',250,0,3,'250–1 250 €'],
+[1,'Falta de cinto de segurança','CE 82.º',120,0,2,'120–600 €'],
+[1,'Estacionar em passadeira / lugar de mobilidade reduzida','CE 71.º',60,0,2,'60–300 €'],
+[1,'Conduzir sem seguro obrigatório','DL 291/2007',500,0,2,'500–2 500 €'],
+[1,'Álcool 0,5–0,8 g/L','CE 81.º',250,0,3,'250–1 250 € · inibição 1 mês–1 ano'],
+[2,'Desrespeitar sinal vermelho','CE 146.º',300,0,4,'muito grave: 300–2 500 € · inibição 2 meses–2 anos'],
+[2,'Não respeitar sinal de STOP','CE 146.º',300,0,4,'muito grave: 300–2 500 €'],
+[2,'Circular em contramão','CE 13.º',300,0,4,'muito grave: 300–2 500 €'],
+[2,'Excesso de velocidade 40–60 km/h (localidade)','CE 27.º',300,0,4,'300–1 500 € · inibição 2 meses–2 anos'],
+[2,'Excesso de velocidade superior a 60 km/h (localidade)','CE 27.º',500,0,4,'500–2 500 € · inibição 2 meses–2 anos'],
+[2,'Álcool 0,8–1,2 g/L','CE 81.º',500,0,5,'500–2 500 € · inibição 2 meses–2 anos'],
+[3,'Condução sem habilitação legal','DL 2/98 art. 3.º',0,6,0,'até 2 anos ou multa'],
+[3,'Condução com álcool ≥ 1,2 g/L','CP 292.º',0,6,6,'até 1 ano ou multa'],
+[3,'Desobediência (inclui recusa de teste de álcool)','CP 348.º',0,6,0,'até 1 ano ou multa'],
+[3,'Ameaça','CP 153.º',0,6,0,'até 1 ano ou multa'],
+[3,'Ofensa à integridade física simples','CP 143.º',0,12,0,'até 3 anos ou multa'],
+[3,'Furto simples','CP 203.º',0,12,0,'até 3 anos ou multa'],
+[3,'Dano','CP 212.º',0,6,0,'até 3 anos ou multa'],
+[4,'Resistência e coação sobre funcionário','CP 347.º',0,12,0,'1 a 5 anos'],
+[4,'Detenção de arma proibida','Lei 5/2006 art. 86.º',0,12,0,'consoante a classe da arma'],
+[4,'Furto qualificado','CP 204.º',0,24,0,'até 5 anos (ou 2 a 8 anos)'],
+[4,'Roubo','CP 210.º',0,24,0,'1 a 8 anos'],
+[4,'Violência doméstica','CP 152.º',0,24,0,'1 a 5 anos'],
+[4,'Ofensa à integridade física grave','CP 144.º',0,36,0,'2 a 10 anos'],
+[4,'Tráfico de menor gravidade','DL 15/93 art. 25.º',0,24,0,'até 5 anos'],
+[5,'Tráfico de estupefacientes','DL 15/93 art. 21.º',0,60,0,'4 a 12 anos'],
+[5,'Homicídio simples','CP 131.º',0,96,0,'8 a 16 anos'],
+[5,'Homicídio qualificado','CP 132.º',0,156,0,'12 a 25 anos']];
+const fmtP=m=>{const a=Math.floor(m/12),b=m%12;return[a?a+(a>1?' anos':' ano'):'',b?b+(b>1?' meses':' mês'):''].filter(Boolean).join(' e ')||'0'};
+async function loadRs(){const{data}=await sb.from('relatorios').select('id,template,criado').eq('autor',me.id).order('criado',{ascending:false}).limit(25);myRs=data||[]}
+const lgBox=()=>myRs.length?myRs.map(r=>`<label class="ck"><input type="checkbox"${lig.includes(r.id)?' checked':''} onchange="tg(${r.id})"> ${esc(r.template)} Nº ${r.id}</label>`).join(''):'<small class="m">Ainda não tens relatórios para anexar.</small>';
+const tg=i=>{lig=lig.includes(i)?lig.filter(x=>x!=i):[...lig,i]};
+const ligTxt=()=>lig.map(i=>{const r=myRs.find(x=>x.id==i);return`  ▪ ${r?r.template:'Relatório'} Nº ${i}`}).join('\n');
+function tot(){let f=0,m=0,p=0;cart.forEach(c=>{f+=c.q*c.f;m+=c.q*c.m;p+=c.q*c.p});return{f,m:$('#c_t').value=='Detenção'?Math.min(m,300):0,p}}
+
+async function calc(){
+ await loadRs();cart=[];lig=[];
+ $('#main').innerHTML=`<h2>Calculadora de Infrações</h2><p class="m">Escolhe as infrações e os crimes, ajusta os valores se for preciso e regista. Os valores são sugestões dentro da moldura legal.</p><div class="cg"><div><div class="card"><h3>Suspeito</h3><div class="row"><input id="s_n" placeholder="Nome"><input id="s_i" placeholder="Idade"><input id="s_c" placeholder="Nº Cartão Cidadão"></div><label for="c_t">Tipo de ocorrência</label><select id="c_t" onchange="catList();regs()"><option>Infração</option><option>Detenção</option></select><input id="c_q" placeholder="Pesquisar infração ou crime..." oninput="catList()" style="margin-top:10px"></div><div id="cat"></div><button class="btn ghost" onclick="addX()">Adicionar linha manual</button></div><div class="reg" id="reg"></div></div>`;
+ catList();regs();
+}
+function catList(){const d=$('#c_t').value=='Detenção',q=$('#c_q').value.toLowerCase();
+ $('#cat').innerHTML=NV.map(([t,c],n)=>{if(!d&&n>2)return'';const it=CAT.map((x,i)=>[x,i]).filter(([x])=>x[0]==n&&(!q||x[1].toLowerCase().includes(q)));if(!it.length)return'';
+ return`<details class="lv" style="--c:${c}"${q?' open':''}><summary>${t}<span>${it.length}</span></summary>${it.map(([x,i])=>`<div class="it"><div><b>${x[1]}</b><small>${x[2]} · ${x[6]}</small></div><span class="pr">${x[3]?x[3]+' €':''}${x[4]?fmtP(x[4]):''}</span><button class="btn sm" onclick="addC(${i})" aria-label="Adicionar">+</button></div>`).join('')}</details>`}).join('')}
+function addC(i){const c=cart.find(x=>x.i==i);if(c)c.q++;else{const x=CAT[i];cart.push({i,n:x[1],q:1,f:x[3],m:x[4],p:x[5]})}regs()}
+function addX(){const n=prompt('Descrição da infração ou crime:');if(!n)return;cart.push({i:-1,n:n.slice(0,100),q:1,f:0,m:0,p:0});regs()}
+function upC(i,k,v){cart[i][k]=Math.max(0,Number(v)||0);regs()}
+function regs(){const t=tot(),d=$('#c_t').value=='Detenção';
+ $('#reg').innerHTML=`<h3>Caixa</h3>${cart.length?`<small class="m">Qtd · Coima (€)${d?' · Prisão (meses)':''}</small>`+cart.map((c,i)=>`<div class="ln"><b>${esc(c.n)}</b><div class="row"><input type="number" min="1" value="${c.q}" onchange="upC(${i},'q',this.value)"><input type="number" min="0" value="${c.f}" onchange="upC(${i},'f',this.value)"${d?`><input type="number" min="0" value="${c.m}" onchange="upC(${i},'m',this.value)"`:''}><button class="btn ghost sm" onclick="cart.splice(${i},1);regs()" aria-label="Remover">×</button></div></div>`).join(''):'<p class="m">Adiciona infrações ou crimes da lista.</p>'}<div class="tf">Total de coimas<b>${t.f.toLocaleString('pt-PT')} €</b></div>${d?`<div class="tp">Pena de prisão<b>${t.m?fmtP(t.m):'—'}</b></div>`:''}${t.p?`<small class="m">Pontos a descontar na carta: ${t.p}</small>`:''}<label>Anexar relatórios</label>${lgBox()}<button class="btn" id="cs" onclick="sendAuto()" style="width:100%;margin-top:14px">Registar e enviar para o Discord</button>`}
+function buildAuto(id,tipo,s,f,m){const d=tipo=='Detenção';
+ return`**POLÍCIA DE SEGURANÇA PÚBLICA**\n**COMANDO DISTRITAL PORTALEGRE**\n${E}\n**${tipo.toUpperCase()} Nº ${id}**\n${D}\n**■  AGENTE**\n  ▪ Nome: ${me.patente} ${me.nome}\n  ▪ Nº Mec.: ${me.numero}\n${P}\n**■  SUSPEITO**\n  ▪ Nome: ${s.nome}\n  ▪ Idade: ${s.idade||'—'}\n  ▪ Nº Cartão Cidadão: ${s.cc||'—'}\n${B}\n**■  ${d?'INFRAÇÕES E CRIMES':'INFRAÇÕES'}**\n`+cart.map(c=>`  ▪ ${c.q}× ${c.n}`+(c.f?` · ${(c.q*c.f).toLocaleString('pt-PT')} €`:'')+(d&&c.m?` · ${fmtP(c.q*c.m)}`:'')).join('\n')+`\n${D}\n**◆  TOTAIS**\n  ▪ Coimas: ${f.toLocaleString('pt-PT')} €`+(m?`\n  ▪ Pena de prisão: ${fmtP(m)}`:'')+(lig.length?`\n${P}\n**■  RELATÓRIOS ANEXOS**\n${ligTxt()}`:'')+`\n${E}`}
+async function sendAuto(){
+ const n=$('#s_n').value.trim();if(!n)return toast('Indica o nome do suspeito.',1);if(!cart.length)return toast('Adiciona pelo menos uma infração ou crime.',1);
+ const b=$('#cs');b.disabled=true;const d=$('#c_t').value=='Detenção',t=tot(),tipo=d?'Detenção':'Infração',sus={nome:n,idade:$('#s_i').value.trim(),cc:$('#s_c').value.trim()};
+ const{data:row,error}=await sb.from('autos').insert({autor:me.id,numero:me.numero,tipo,suspeito:sus,itens:cart,total_coima:t.f,prisao_meses:t.m,relatorios:lig}).select('id').single();
+ if(error){b.disabled=false;return toast('Erro ao guardar o registo.',1)}
+ const txt=buildAuto(row.id,tipo,sus,t.f,t.m);await sb.from('autos').update({texto:txt}).eq('id',row.id);
+ const r=await fn('send-report',{canal:'autos',title:tipo.toUpperCase(),color:d?0xc4161c:0xd9a400,text:txt,images:[]});
+ toast(r.ok?`${tipo} Nº ${row.id} registada e enviada.`:`${tipo} Nº ${row.id} guardada, mas o Discord falhou.`,!r.ok);calc()}
+
+function toast(m,e){const t=document.createElement('div');t.className='toast'+(e?' bad':'');t.textContent=m;document.body.append(t);setTimeout(()=>t.remove(),3500)}
+function modal(h){closeM();const o=document.createElement('div');o.className='ov';o.id='modal';o.innerHTML=`<div class="mb">${h}</div>`;document.body.append(o)}
+function closeM(){$('#modal')?.remove()}
+async function fn(n,b){const{data:{session}}=await sb.auth.getSession();const r=await fetch('/.netlify/functions/'+n,{method:'POST',headers:{Authorization:'Bearer '+session.access_token},body:JSON.stringify(b)});const j=await r.json().catch(()=>({}));return{...j,ok:r.ok}}
+
+function loginView(){$('#root').innerHTML=`<div class="lgn"><div class="hero"><img src="assets/logo-psp-bandeira.png" alt=""></div><form class="box" onsubmit="return doLogin(event)"><img src="assets/logo-psp.png" alt="Polícia de Segurança Pública"><h2>Portal Operacional</h2><p class="m">Acesso reservado aos elementos da PSP de Portalegre.</p><label for="n">Nº mecanográfico</label><input id="n" inputmode="numeric" placeholder="2026xxx" required><label for="p">Palavra-passe</label><input id="p" type="password" required><button class="btn">Entrar</button><div id="err" class="bad"></div></form></div>`}
+async function doLogin(e){e.preventDefault();const{error}=await sb.auth.signInWithPassword({email:$('#n').value.trim()+'@psp.rp',password:$('#p').value});if(error){$('#err').textContent='Nº mecanográfico ou palavra-passe incorretos.';return false}start();return false}
+async function logout(){await sb.auth.signOut();me=null;loginView()}
+
+async function start(){
+ const{data:{session}}=await sb.auth.getSession();if(!session)return loginView();
+ const{data}=await sb.from('profiles').select('*').eq('id',session.user.id).single();
+ if(!data||!data.ativo){await sb.auth.signOut();loginView();return toast('Conta inativa ou sem perfil.',1)}
+ me=data;shell();
+ if(me.must_change_password)pwModal();else if(!me.tutorial_done)tutorial();
+}
+function shell(){
+ const nav=[['inicio','Início'],['efetivos','Quadro de Efetivos'],['relatorios','Relatórios'],['calc','Calculadora de Infrações']];if(me.nivel=='diretor')nav.push(['direcao','Direção']);
+ $('#root').innerHTML=`<div class="app"><aside id="side"><div class="lg"><img src="assets/logo-psp.png" alt="PSP"></div><nav>${nav.map(([k,v])=>`<a id="nav-${k}" data-s="${k}" onclick="go('${k}')">${v}</a>`).join('')}</nav><div class="usr"><b>${esc(me.patente)} ${esc(me.nome)}</b>Nº ${esc(me.numero)}<br><a class="lk" onclick="logout()">Terminar sessão</a></div></aside><main id="main"></main></div>`;
+ go(sec);
+}
+function go(s){sec=s;document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on',a.dataset.s==s));$('#main').innerHTML='';({inicio,efetivos,relatorios,calc,direcao})[s]()}
+
+function pwModal(){modal(`<h3>Define a tua palavra-passe</h3><p class="m">A conta foi criada pela direção. Escolhe agora uma palavra-passe só tua (mínimo 8 caracteres).</p><label for="np1">Nova palavra-passe</label><input id="np1" type="password"><label for="np2">Repetir palavra-passe</label><input id="np2" type="password"><div id="pe" class="bad"></div><button class="btn" style="width:100%;margin-top:16px" onclick="setPw()">Guardar palavra-passe</button>`)}
+async function setPw(){const a=$('#np1').value;if(a.length<8)return $('#pe').textContent='Usa pelo menos 8 caracteres.';if(a!=$('#np2').value)return $('#pe').textContent='As palavras-passe não coincidem.';
+ const{error}=await sb.auth.updateUser({password:a});if(error)return $('#pe').textContent='Não foi possível guardar. Tenta outra palavra-passe.';
+ await sb.rpc('finish_password');me.must_change_password=false;closeM();if(!me.tutorial_done)tutorial()}
+
+const STEPS=[['#nav-inicio','Início','O resumo da tua conta e atalhos para as secções que mais usas.'],['#nav-efetivos','Quadro de Efetivos','Consulta os elementos da corporação, a patente, a direção e o estado de cada um. Só a direção o pode alterar.'],['#nav-relatorios','Relatórios','Escolhe um modelo, preenche os campos, cola fotografias com Ctrl+V e envia. O relatório segue formatado para o Discord.'],['#nav-calc','Calculadora de Infrações','Escolhe as infrações e os crimes cometidos, vê o total das coimas a verde e a pena de prisão a vermelho, anexa relatórios e envia o registo para o Discord.'],['#nav-direcao','Direção','Aqui crias contas de agentes e repões palavras-passe.'],['#side .usr','A tua conta','Vês aqui quem és. Termina sempre a sessão no fim do turno.']];
+function tutorial(i=0){
+ const st=STEPS.filter(s=>$(s[0]));
+ if(i>=st.length){sb.rpc('finish_tutorial');me.tutorial_done=true;$('#tut')?.remove();return}
+ const[s,t,x]=st[i],r=$(s).getBoundingClientRect(),p=6,x1=r.left-p,y1=r.top-p,x2=r.right+p,y2=r.bottom+p;
+ let o=$('#tut');if(!o){o=document.createElement('div');o.id='tut';document.body.append(o)}
+ o.innerHTML=`<div class="veil" style="clip-path:polygon(0 0,100% 0,100% 100%,0 100%,0 0,${x1}px ${y1}px,${x1}px ${y2}px,${x2}px ${y2}px,${x2}px ${y1}px,${x1}px ${y1}px)"></div><div class="ring" style="left:${x1}px;top:${y1}px;width:${x2-x1}px;height:${y2-y1}px"></div><div class="tc" style="left:${x2+18}px;top:${Math.max(12,y1)}px"><small>Passo ${i+1} de ${st.length}</small><h3>${t}</h3><p>${x}</p><div class="row"><button class="btn ghost" onclick="tutorial(${st.length})">Saltar</button><button class="btn" onclick="tutorial(${i+1})">${i+1==st.length?'Concluir':'Seguinte'}</button></div></div>`;
+}
+
+async function inicio(){
+ const{count}=await sb.from('efetivos').select('*',{count:'exact',head:true});
+ $('#main').innerHTML=`<h2>Bem-vindo, ${esc(me.patente)} ${esc(me.nome)}</h2><p class="m">Nº ${esc(me.numero)} · ${esc(me.direcao||'')}</p><div class="grid" style="margin-top:18px"><div class="card"><span class="m">Elementos no quadro</span><b class="big">${count??0}</b></div><div class="card cl" onclick="go('efetivos')"><h3>Quadro de Efetivos</h3><p class="m">Consultar elementos e estados.</p></div><div class="card cl" onclick="go('relatorios')"><h3>Relatórios</h3><p class="m">Preencher e enviar para o Discord.</p></div></div>`;
+}
+
+async function efetivos(){
+ const{data}=await sb.from('efetivos').select('*').order('direcao').order('nome');const d=me.nivel=='diretor';
+ $('#main').innerHTML=`<h2>Quadro de Efetivos</h2>${d?`<div class="card"><h3>Adicionar elemento</h3><div class="row"><input id="e_n" placeholder="Nº"><input id="e_m" placeholder="Nome"><select id="e_p">${opt(PAT)}</select><select id="e_d">${opt(DIR)}</select><button class="btn" onclick="addEf()">Adicionar</button></div></div>`:''}<div class="card"><div class="tw"><table><tr><th>Nº<th>Nome<th>Patente<th>Direção<th>Estado${d?'<th>':''}</tr>${(data||[]).map(e=>`<tr><td>${esc(e.numero)}<td>${esc(e.nome)}<td>${esc(e.patente)}<td>${esc(e.direcao)}<td>${d?`<select onchange="setEf(${e.id},this.value)">${opt(ES,e.estado)}</select><td><button class="btn ghost sm" onclick="delEf(${e.id})">Remover</button>`:`<span class="tag">${esc(e.estado)}</span>`}</tr>`).join('')}</table></div></div>`;
+}
+async function addEf(){const nome=$('#e_m').value.trim();if(!nome)return toast('Indica o nome.',1);const{error}=await sb.from('efetivos').insert({numero:$('#e_n').value.trim(),nome,patente:$('#e_p').value,direcao:$('#e_d').value});if(error)return toast('Erro ao adicionar.',1);efetivos()}
+async function setEf(id,v){const{error}=await sb.from('efetivos').update({estado:v}).eq('id',id);toast(error?'Erro ao guardar.':'Estado atualizado.',!!error)}
+async function delEf(id){if(!confirm('Remover este elemento do quadro?'))return;await sb.from('efetivos').delete().eq('id',id);efetivos()}
+
+async function relatorios(){
+ imgs=[];lig=[];await loadRs();
+ $('#main').innerHTML=`<h2>Relatórios</h2><p class="m">Escolhe um modelo, preenche e envia. O texto é formatado automaticamente.</p><div class="card"><label for="tpl">Modelo</label><select id="tpl" onchange="formTpl()">${Object.entries(TPL).map(([k,v])=>`<option value="${k}">${v.n}</option>`).join('')}</select><div id="fm"></div><label>Fotografias</label><div class="drop">Cola uma imagem com Ctrl+V ou <label class="lk">escolhe ficheiros<input type="file" accept="image/*" multiple hidden onchange="upl(this.files)"></label></div><div class="row"><input id="lnk" placeholder="Ou cola o link de uma imagem"><button class="btn ghost" onclick="addLnk()">Adicionar link</button></div><div id="th" class="th"></div><label>Anexar outros relatórios (opcional)</label><div id="lg">${lgBox()}</div><div class="row"><button class="btn ghost" onclick="prev()">Pré-visualizar</button><button class="btn" id="sd" onclick="send()">Enviar para o Discord</button></div><pre id="pv" class="pv" hidden></pre></div><h3>Últimos relatórios</h3><div id="hs" class="card"></div>`;
+ formTpl();histo();
+}
+const fld=([i,l,t,o])=>`<label for="f_${i}">${l}</label>`+(t=='s'?`<select id="f_${i}">${opt(o)}</select>`:(t=='a'||t=='x')?`<textarea id="f_${i}" rows="3"></textarea>`:`<input id="f_${i}">`);
+function formTpl(){const T=TPL[$('#tpl').value];$('#fm').innerHTML=T.S.map((s,i)=>`<fieldset class="fs"><legend>${s.h}</legend>${s.gate?`<label for="f_${s.gate[0]}">${s.gate[1]}</label><select id="f_${s.gate[0]}" onchange="$('#g${i}').hidden=this.value!='Sim'"><option>Não</option><option>Sim</option></select>`:''}<div id="g${i}"${s.gate?' hidden':''}>${s.f.map(fld).join('')}</div></fieldset>`).join('');
+ const n=new Date(),p=x=>String(x).padStart(2,'0'),set=(i,x)=>$('#f_'+i)&&($('#f_'+i).value=x);
+ set('ag',`${me.patente} ${me.nome}`);set('nm',me.numero);set('dt',`${p(n.getDate())}/${p(n.getMonth()+1)}/${n.getFullYear()}`);set('hr',`${p(n.getHours())}:${p(n.getMinutes())}`)}
+function vals(){const k=$('#tpl').value,v={};TPL[k].S.forEach(s=>{if(s.gate)v[s.gate[0]]=$('#f_'+s.gate[0]).value;s.f.forEach(f=>v[f[0]]=$('#f_'+f[0]).value.trim())});return[k,v]}
+function build(k,v,id){const T=TPL[k],on=T.S.filter(s=>!s.gate||v[s.gate[0]]=='Sim');
+ let o=`**POLÍCIA DE SEGURANÇA PÚBLICA**\n**COMANDO DISTRITAL PORTALEGRE**\n${E}\n**${T.t}${id?' Nº '+id:''}**\n${D}\n`;
+ on.forEach((s,i)=>{o+=`**${s.gate?'◆':'■'}  ${s.h}**\n`+s.f.map(([id,l,t])=>{let x=v[id]||(id=='rs'?(v.inf=='Sim'?'Infração detetada. Ver secção Infração.':'Sem infrações detetadas. Condutor dispensado.'):'—');return t=='x'?'  '+x.replace(/\n/g,'\n  '):`  ▪ ${l.replace(/ \(.*\)/,'')}: ${x}`}).join('\n')+'\n'+(i<on.length-1?SEP[s.s]:E)+'\n'});
+ if(lig.length)o=o.slice(0,-E.length-1)+`${P}\n**■  RELATÓRIOS ANEXOS**\n${ligTxt()}\n${E}\n`;
+ return o}
+function prev(){const[k,v]=vals(),p=$('#pv');p.hidden=false;p.textContent=build(k,v).replace(/\*\*/g,'')}
+function thumbs(){$('#th').innerHTML=imgs.map((u,i)=>`<div><img src="${esc(u)}" alt=""><button onclick="imgs.splice(${i},1);thumbs()" aria-label="Remover">×</button></div>`).join('')}
+function addLnk(){const u=$('#lnk').value.trim();if(!/^https?:\/\//.test(u))return toast('Cola um link que comece por http.',1);imgs.push(u);$('#lnk').value='';thumbs()}
+async function upl(fs){for(const f of fs){const p=`${me.numero}/${Date.now()}-${Math.random().toString(36).slice(2,6)}.${f.type.split('/')[1]||'png'}`;const{error}=await sb.storage.from('anexos-relatorios').upload(p,f,{contentType:f.type});if(error){toast('Falha ao carregar a imagem.',1);continue}imgs.push(sb.storage.from('anexos-relatorios').getPublicUrl(p).data.publicUrl)}thumbs()}
+document.addEventListener('paste',e=>{if(sec!='relatorios'||!e.clipboardData)return;const f=[...e.clipboardData.files].filter(x=>x.type.startsWith('image/'));if(f.length){e.preventDefault();upl(f)}});
+async function send(){
+ const[k,v]=vals();const q=TPL[k].req.find(i=>!v[i]);if(q)return toast('Falta preencher: '+TPL[k].S.flatMap(x=>x.f).find(f=>f[0]==q)[1],1);
+ const b=$('#sd');b.disabled=true;
+ const{data:row,error}=await sb.from('relatorios').insert({autor:me.id,numero:me.numero,template:TPL[k].n,dados:v,anexos:imgs,ligados:lig}).select('id').single();
+ if(error){b.disabled=false;return toast('Erro ao guardar o relatório.',1)}
+ const txt=build(k,v,row.id);await sb.from('relatorios').update({texto:txt}).eq('id',row.id);
+ const r=await fn('send-report',{canal:'relatorios',text:txt,images:imgs});
+ toast(r.ok?`Relatório Nº ${row.id} enviado para o Discord.`:`Relatório Nº ${row.id} guardado, mas o Discord falhou.`,!r.ok);relatorios();
+}
+async function histo(){const{data}=await sb.from('relatorios').select('id,template,numero,criado').order('criado',{ascending:false}).limit(10);$('#hs').innerHTML=(data&&data.length)?`<table>${data.map(r=>`<tr><td>${esc(r.template)} Nº ${r.id}<td>Agente ${esc(r.numero)}<td>${new Date(r.criado).toLocaleString('pt-PT')}</tr>`).join('')}</table>`:'<span class="m">Ainda não enviaste nenhum relatório.</span>'}
+
+async function direcao(){
+ const{data}=await sb.from('profiles').select('*').order('numero');
+ $('#main').innerHTML=`<h2>Direção · Contas</h2><div class="card"><h3>Criar conta</h3><div class="row"><input id="a_n" placeholder="Nome (ex.: João Silva)"><select id="a_p">${opt(PAT)}</select><select id="a_d">${opt(DIR)}</select><select id="a_v"><option value="agente">Agente</option><option value="diretor">Diretor</option></select><button class="btn" onclick="criar()">Criar conta</button></div><p class="m">O nº mecanográfico é atribuído automaticamente e é gerada uma palavra-passe temporária.</p></div><div class="card"><div class="tw"><table><tr><th>Nº<th>Nome<th>Patente<th>Nível<th></tr>${(data||[]).map(p=>`<tr><td>${esc(p.numero)}<td>${esc(p.nome)}<td>${esc(p.patente)}<td><span class="tag">${esc(p.nivel)}</span><td><button class="btn ghost sm" onclick="rst('${p.id}')">Repor palavra-passe</button></tr>`).join('')}</table></div></div>`;
+}
+function credenciais(t,n,pw){modal(`<h3>${t}</h3>${n?`<p>Nº mecanográfico: <b>${n}</b></p>`:''}<p>Palavra-passe temporária: <code>${pw}</code></p><p class="m">Entrega estes dados ao agente. No primeiro acesso terá de definir a sua própria palavra-passe.</p><button class="btn" onclick="closeM()">Fechar</button>`)}
+async function criar(){const nome=$('#a_n').value.trim();if(!nome)return toast('Indica o nome do agente.',1);
+ const r=await fn('create-agent',{action:'create',nome,patente:$('#a_p').value,direcao:$('#a_d').value,nivel:$('#a_v').value});
+ if(!r.ok)return toast(r.error||'Erro ao criar a conta.',1);credenciais('Conta criada',r.numero,r.password);direcao()}
+async function rst(id){if(!confirm('Repor a palavra-passe desta conta?'))return;const r=await fn('create-agent',{action:'reset',id});if(!r.ok)return toast(r.error||'Erro.',1);credenciais('Palavra-passe reposta','',r.password)}
+
+start();
+</script></body></html>
