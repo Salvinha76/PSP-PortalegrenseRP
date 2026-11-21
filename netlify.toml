@@ -1,0 +1,10 @@
+[build]
+  base = "."
+  command = ""
+  publish = "psp-portal"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[functions]
+  directory = "psp-portal/netlify/functions"

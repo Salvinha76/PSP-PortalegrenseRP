@@ -45,7 +45,7 @@ code{background:var(--bg);padding:3px 8px;border-radius:5px;font-weight:700}
 </style></head><body><div id="root"></div>
 <script>
 const SB_URL='https://fsemudazeyihlaoyxzof.supabase.co/rest/v1/',SB_KEY='sb_publishable_H0isXPCovX5HlE78K3tbKw_fsf8APqI';
-const sb=supabase.createClient(SB_URL,SB_KEY);
+const sb=supabase.createClient(new URL(SB_URL).origin,SB_KEY);
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const opt=(a,s)=>a.map(x=>`<option${x==s?' selected':''}>${x}</option>`).join('');
@@ -152,14 +152,27 @@ function modal(h){closeM();const o=document.createElement('div');o.className='ov
 function closeM(){$('#modal')?.remove()}
 async function fn(n,b){const{data:{session}}=await sb.auth.getSession();const r=await fetch('/.netlify/functions/'+n,{method:'POST',headers:{Authorization:'Bearer '+session.access_token},body:JSON.stringify(b)});const j=await r.json().catch(()=>({}));return{...j,ok:r.ok}}
 
-function loginView(){$('#root').innerHTML=`<div class="lgn"><div class="hero"><img src="assets/logo-psp-bandeira.png" alt=""></div><form class="box" onsubmit="return doLogin(event)"><img src="assets/logo-psp.png" alt="Polícia de Segurança Pública"><h2>Portal Operacional</h2><p class="m">Acesso reservado aos elementos da PSP de Portalegre.</p><label for="n">Nº mecanográfico</label><input id="n" inputmode="numeric" placeholder="2026xxx" required><label for="p">Palavra-passe</label><input id="p" type="password" required><button class="btn">Entrar</button><div id="err" class="bad"></div></form></div>`}
-async function doLogin(e){e.preventDefault();const{error}=await sb.auth.signInWithPassword({email:$('#n').value.trim()+'@psp.rp',password:$('#p').value});if(error){$('#err').textContent='Nº mecanográfico ou palavra-passe incorretos.';return false}start();return false}
+function loginView(){$('#root').innerHTML=`<div class="lgn"><div class="hero"><img src="assets/logo-psp-bandeira.png" alt=""></div><form class="box" onsubmit="return doLogin(event)"><img src="assets/logo-psp.png" alt="Polícia de Segurança Pública"><h2>Portal Operacional</h2><p class="m">Acesso reservado aos elementos da PSP de Portalegre.</p><label for="n">Nº mecanográfico ou email</label><input id="n" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="Nº mecanográfico ou email" required><label for="p">Palavra-passe</label><input id="p" type="password" autocomplete="current-password" required><button class="btn" id="login-submit">Entrar</button><div id="err" class="bad" role="alert" aria-live="polite"></div></form></div>`}
+async function doLogin(e){
+ e.preventDefault();
+ const b=$('#login-submit'),err=$('#err');if(b.disabled)return false;
+ b.disabled=true;b.textContent='A entrar…';err.textContent='';
+ const identifier=$('#n').value.trim().toLowerCase();
+ try{
+  const{error}=await sb.auth.signInWithPassword({email:identifier.includes('@')?identifier:identifier+'@psp.rp',password:$('#p').value});
+  if(error){err.textContent=error.status==429?'Demasiadas tentativas. Aguarda um momento e tenta novamente.':(!error.status||error.status>=500)?'Não foi possível ligar ao serviço de autenticação. Tenta novamente.':'Nº mecanográfico, email ou palavra-passe incorretos.';return false}
+  await start();
+ }catch{err.textContent='Não foi possível ligar ao serviço de autenticação. Tenta novamente.'}
+ finally{b.disabled=false;b.textContent='Entrar'}
+ return false;
+}
 async function logout(){await sb.auth.signOut();me=null;loginView()}
 
 async function start(){
- const{data:{session}}=await sb.auth.getSession();if(!session)return loginView();
- const{data}=await sb.from('profiles').select('*').eq('id',session.user.id).single();
- if(!data||!data.ativo){await sb.auth.signOut();loginView();return toast('Conta inativa ou sem perfil.',1)}
+ const{data:{session},error:sessionError}=await sb.auth.getSession();if(sessionError)throw sessionError;if(!session)return loginView();
+ const{data,error}=await sb.from('profiles').select('*').eq('id',session.user.id).single();
+ if(error){loginView();$('#err').textContent='Não foi possível carregar o perfil. Tenta novamente ou contacta a direção.';return}
+ if(!data||!data.ativo){await sb.auth.signOut();me=null;loginView();$('#err').textContent='Conta inativa ou sem perfil. Contacta a direção.';return}
  me=data;shell();
  if(me.must_change_password)pwModal();else if(!me.tutorial_done)tutorial();
 }
@@ -238,5 +251,5 @@ async function criar(){const nome=$('#a_n').value.trim();if(!nome)return toast('
  if(!r.ok)return toast(r.error||'Erro ao criar a conta.',1);credenciais('Conta criada',r.numero,r.password);direcao()}
 async function rst(id){if(!confirm('Repor a palavra-passe desta conta?'))return;const r=await fn('create-agent',{action:'reset',id});if(!r.ok)return toast(r.error||'Erro.',1);credenciais('Palavra-passe reposta','',r.password)}
 
-start();
+start().catch(()=>{loginView();$('#err').textContent='Não foi possível iniciar a sessão. Tenta novamente.'});
 </script></body></html>
